@@ -37,7 +37,10 @@ def slavePodTemplate = """
     """
     def environment = ""
     def branch = "${scm.branches[0].name}".replaceAll(/^\*\//, '').replace("/", "-").toLowerCase()
+    def docker_image = ""
 
+    docker_image = "rbbit/artemis:${branch.replace('version/', 'v')}"
+      // master -> prod  dev-feature/* -> dev qa-feature/* -> qa
         if (branch == "master") {
         environment ="prod"
       } else if (branch.contains('dev-feature')) {
@@ -57,7 +60,7 @@ def slavePodTemplate = """
         container("docker") {
             dir('deployments/docker') {
                 stage("Docker Build") {
-                    sh "docker build -t rbbit/artemis:${branch.replace('version/', 'v')}  ."
+                    sh "docker build -t ${docker_image}  ."
                 
                 }
                 stage("Docker Login") {
@@ -67,7 +70,7 @@ def slavePodTemplate = """
                     }
                 }
                 stage("Docker Push") {
-                    sh "docker push rbbit/artemis:${branch.replace('version/', 'v')}"
+                    sh "docker push ${docker_image}"
                     
                 }
 
@@ -75,7 +78,8 @@ def slavePodTemplate = """
                   build job: 'artemis-deploy',
                   parameters: [
                       [$class: 'BooleanParameterValue', name: 'terraformApply', value: true],
-                      [$class: 'StringParameterValue',  name: 'environment', value: "${environment}"]
+                      [$class: 'StringParameterValue',  name: 'environment', value: "${environment}"],
+                      [$class: 'StringParameterValue',  name: 'docker_image', value: "${docker_image}"]
                       ]
 
                 }
