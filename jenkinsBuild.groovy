@@ -38,9 +38,13 @@ def slavePodTemplate = """
     def environment = ""
     def branch = "${scm.branches[0].name}".replaceAll(/^\*\//, '').replace("/", "-").toLowerCase()
 
-    if (branch == "master") {
-        environment = "prod"
-        }
+        if (branch == "master") {
+        environment ="prod"
+      } else if (branch.contains('dev-feature/')) {
+        environment = "dev" 
+      } else if (branch.contains('qa-feature/')) {
+        environment = "qa" 
+      }
 
     
     podTemplate(name: k8slabel, label: k8slabel, yaml: slavePodTemplate, showRawYaml: false) {
