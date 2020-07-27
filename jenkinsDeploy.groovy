@@ -89,7 +89,7 @@ def slavePodTemplate = """
                                 #!/bin/bash
                                 set +ex
                                 terraform init 
-                                terraform plan -var-file
+                                terraform plan
                                 """
                             }
                         }
