@@ -104,7 +104,7 @@ def slavePodTemplate = """
                             terraform destroy -auto-approve
                             """
                         } else {
-                            println("Skiping the destroy")
+                            println("Skipping the destroy")
                         }
                     }
                 }
