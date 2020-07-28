@@ -4,6 +4,7 @@ properties([
         booleanParam(defaultValue: false, description: 'Please select to destroy everything.', name: 'terraformDestroy'),
         booleanParam(defaultValue: false, description: 'Please select to run the job in debug mode', name: 'debugMode'),
         choice(choices: ['dev', 'qa', 'stage', 'prod'], description: 'Please select the environment to deploy.', name: 'environment'),
+        choice(choices: ['us-west-2', 'us-west-1', 'us-east-2', 'us-east-1', 'eu-west-1'], description: 'Please select the region', name: 'aws_region'),
         string(defaultValue: 'None', description: 'Please provide the docker image', name: 'docker_image', trim: true)
         ])
     ])
@@ -82,16 +83,18 @@ def slavePodTemplate = """
                                 println("Applying the changes")
                                 sh """
                                 #!/bin/bash
-                                terraform init 
-                                terraform apply -auto-approve
+                                export AWS_DEFAULT_REGION=${aws_region}
+                                source ./setenv.sh configurations/dev.tfvars
+                                terraform apply -auto-approve -var-file \$DATAFILE
                                 """
                             } else {
                                 println("Planing the changes")
                                 sh """
                                 #!/bin/bash
                                 set +ex
-                                terraform init 
-                                terraform plan
+                                export AWS_DEFAULT_REGION=${aws_region}
+                                source ./setenv.sh configurations/dev.tfvars
+                                terraform plan -var-file \$DATAFILE
                                 """
                             }
                         }
@@ -101,8 +104,9 @@ def slavePodTemplate = """
                             println("Destroying the all")
                             sh """
                             #!/bin/bash
-                            terraform init 
-                            terraform destroy -auto-approve
+                            export AWS_DEFAULT_REGION=${aws_region}
+                            source ./setenv.sh configurations/dev.tfvars
+                            terraform destroy -auto-approve -var-file \$DATAFILE
                             """
                         } else {
                             println("Skipping the destroy")
