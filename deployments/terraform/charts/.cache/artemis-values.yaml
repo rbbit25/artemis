@@ -5,7 +5,7 @@
 replicaCount: 5
 
 image:
-  repository: fsadykov/artemis:master
+  repository: rbbit/artemis:master
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
