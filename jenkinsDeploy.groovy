@@ -84,7 +84,7 @@ def slavePodTemplate = """
                                 sh """
                                 #!/bin/bash
                                 export AWS_DEFAULT_REGION=${aws_region}
-                                source ./setenv.sh configurations/dev.tfvars
+                                source ./setenv.sh dev.tfvars
                                 terraform apply -auto-approve -var-file \$DATAFILE
                                 """
                             } else {
@@ -93,7 +93,7 @@ def slavePodTemplate = """
                                 #!/bin/bash
                                 set +ex
                                 export AWS_DEFAULT_REGION=${aws_region}
-                                source ./setenv.sh configurations/dev.tfvars
+                                source ./setenv.sh dev.tfvars
                                 terraform plan -var-file \$DATAFILE
                                 """
                             }
@@ -105,7 +105,7 @@ def slavePodTemplate = """
                             sh """
                             #!/bin/bash
                             export AWS_DEFAULT_REGION=${aws_region}
-                            source ./setenv.sh configurations/dev.tfvars
+                            source ./setenv.sh dev.tfvars
                             terraform destroy -auto-approve -var-file \$DATAFILE
                             """
                         } else {
